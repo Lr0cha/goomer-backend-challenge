@@ -1,4 +1,4 @@
-package com.api.goomer.entities;
+package com.api.goomer.entities.category;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "tb_categories")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,5 +15,6 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String description;
 }

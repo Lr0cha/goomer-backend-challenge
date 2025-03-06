@@ -1,5 +1,9 @@
-package com.api.goomer.entities;
+package com.api.goomer.entities.product;
 
+import com.api.goomer.entities.category.Category;
+import com.api.goomer.entities.product.embedded.Offer;
+import com.api.goomer.entities.restaurant.Restaurant;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -10,7 +14,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
-@Table(name = "products")
+@Table(name = "tb_products")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,21 +23,26 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "url_image")
+    @Column(name = "url_image", nullable = false)
     private String urlImage;
 
-    private String description;
+    @Column(name = "product_name", nullable = false)
+    private String productName;
 
+    @Column(nullable = false)
     private BigDecimal price;
 
+    @ManyToOne
+    @JoinColumn(name="category_id", nullable = false)
     private Category category;
 
-    @Column(name = "promotional_description")
-    private String promotionalDescription;
+    @JsonIgnore
+    private Boolean isOnOffer;
 
-    @Column(name = "promotional_price")
-    private String promotionalPrice;
+    @Embedded
+    private Offer offer;
 
-    @Column(name = "is_on_promotion")
-    private Boolean isOnPromotion;
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
 }
