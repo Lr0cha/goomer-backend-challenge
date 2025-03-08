@@ -25,7 +25,7 @@ public class RestaurantService {
 
     @Transactional(readOnly = true)
     public Restaurant findById(UUID id) { //404
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Restaurante não encontrado"));
     }
 
     @Transactional
@@ -34,10 +34,10 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void update(UUID id, Restaurant newRestaurant) {
+    public void update(UUID id, Restaurant updatedRestaurant) {
         Restaurant restaurant = findById(id);
-        restaurant.setAddress(newRestaurant.getAddress());
-        restaurant.setName(newRestaurant.getName());
+        restaurant.setAddress(updatedRestaurant.getAddress());
+        restaurant.setName(updatedRestaurant.getName());
         // ...
         repository.save(restaurant);
     }
