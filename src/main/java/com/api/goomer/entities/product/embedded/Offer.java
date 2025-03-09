@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 
 @Data
@@ -17,7 +18,7 @@ public class Offer {
     private String promotionalDescription;
 
     @Column(name = "promotional_price")
-    private String promotionalPrice;
+    private BigDecimal promotionalPrice;
 
     @Column(name = "promotional_days")
     private String promotionalDays;

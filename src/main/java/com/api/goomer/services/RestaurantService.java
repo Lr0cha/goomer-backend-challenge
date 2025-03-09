@@ -36,9 +36,10 @@ public class RestaurantService {
     @Transactional
     public void update(UUID id, Restaurant updatedRestaurant) {
         Restaurant restaurant = findById(id);
+        restaurant.setUrlImage(updatedRestaurant.getUrlImage());
         restaurant.setAddress(updatedRestaurant.getAddress());
         restaurant.setName(updatedRestaurant.getName());
-        // ...
+        restaurant.setOpeningHours(updatedRestaurant.getOpeningHours());
         repository.save(restaurant);
     }
 

@@ -35,6 +35,6 @@ public class Restaurant {
 
     @JsonIgnore
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Product> menu = new ArrayList<>();
+    private List<Product> menu;
 }
 

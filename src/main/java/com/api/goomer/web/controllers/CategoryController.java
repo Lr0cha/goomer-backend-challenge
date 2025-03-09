@@ -2,6 +2,9 @@ package com.api.goomer.web.controllers;
 
 import com.api.goomer.entities.category.Category;
 import com.api.goomer.services.CategoryService;
+import com.api.goomer.web.dtos.category.CategoryDto;
+import com.api.goomer.web.dtos.mapper.CategoryMapper;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,17 +19,19 @@ public class CategoryController {
     private CategoryService service;
 
     @GetMapping
-    public ResponseEntity<Page<Category>> findAllCategories(Pageable pageable){
-        return ResponseEntity.ok(service.findAll(pageable));
+    public ResponseEntity<Page<CategoryDto>> findAllCategories(Pageable pageable){
+        Page<Category> categories = service.findAll(pageable);
+        return ResponseEntity.ok(categories.map(CategoryMapper::toDto));
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategories(@RequestBody Category category){
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(category));
+    public ResponseEntity<CategoryDto> createCategories(@Valid @RequestBody CategoryDto categoryDto){
+        Category categoryCreated = service.create(CategoryMapper.toCategory(categoryDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(CategoryMapper.toDto(categoryCreated));
     }
 
     @DeleteMapping(value =  "{id}")
-    public ResponseEntity<Page<Category>> deleteCategoryById(@PathVariable Long id){
+    public ResponseEntity<Void> deleteCategoryById(@PathVariable Long id){
         service.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
