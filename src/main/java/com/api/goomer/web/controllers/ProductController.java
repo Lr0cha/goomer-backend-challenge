@@ -38,8 +38,10 @@ public class ProductController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
     @GetMapping(value =  "{restaurantId}")
-    public ResponseEntity<Page<ProductResponseDto>> getAllProductsByRestaurant(@PathVariable UUID restaurantId, Pageable pageable) {
-        Page<Product> products = service.findProductsByRestaurant(restaurantId,pageable);
+    public ResponseEntity<Page<ProductResponseDto>> getAllProductsByRestaurant(@RequestParam(required = false) String name,
+                                                                               @RequestParam(required = false) String category,
+                                                                               @PathVariable UUID restaurantId, Pageable pageable) {
+        Page<Product> products = service.findProductsByRestaurant(name,category,restaurantId,pageable);
         return ResponseEntity.ok(products.map(ProductMapper::toDto));
     }
 

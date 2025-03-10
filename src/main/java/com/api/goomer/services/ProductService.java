@@ -6,11 +6,13 @@ import com.api.goomer.entities.restaurant.Restaurant;
 import com.api.goomer.exceptions.EntityIsNotFoundException;
 import com.api.goomer.exceptions.UniqueViolationException;
 import com.api.goomer.repositories.ProductRepository;
+import com.api.goomer.repositories.specifications.ProductSpecification;
 import com.api.goomer.web.dtos.mapper.ProductMapper;
 import com.api.goomer.web.dtos.product.ProductCreateDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,9 +30,11 @@ public class ProductService {
     CategoryService categoryService;
 
     @Transactional(readOnly = true)
-    public Page<Product> findProductsByRestaurant(UUID restaurantId, Pageable pageable) {
+    public Page<Product> findProductsByRestaurant(String name, String category, UUID restaurantId, Pageable pageable) {
         Restaurant restaurant = returnRestaurantById(restaurantId);
-        return repository.findByRestaurant(restaurant,pageable);
+        Specification<Product> specification = ProductSpecification.withFilters(name,category);
+        specification = specification.and(ProductSpecification.withRestaurant(restaurant));
+        return repository.findAll(specification,pageable);
     }
 
     @Transactional

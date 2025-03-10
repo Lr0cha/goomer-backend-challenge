@@ -34,8 +34,10 @@ public class RestaurantController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = RestaurantResponseDto.class)))
             })
     @GetMapping
-    public ResponseEntity<Page<RestaurantResponseDto>> findAll(Pageable pageable){
-       Page<Restaurant> restaurants =  service.findAll(pageable);
+    public ResponseEntity<Page<RestaurantResponseDto>> findAll(@RequestParam(required = false) String name,
+                                                               @RequestParam(required = false) String address,
+                                                               Pageable pageable){
+       Page<Restaurant> restaurants =  service.findAll(name, address, pageable);
         return ResponseEntity.ok(restaurants.map(RestaurantMapper::toDto));
     }
 

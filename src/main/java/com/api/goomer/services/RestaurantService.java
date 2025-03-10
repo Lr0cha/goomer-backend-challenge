@@ -5,9 +5,11 @@ import com.api.goomer.exceptions.EntityIsNotFoundException;
 import com.api.goomer.exceptions.UniqueViolationException;
 import com.api.goomer.repositories.RestaurantRepository;
 
+import com.api.goomer.repositories.specifications.RestaurantSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +23,9 @@ public class RestaurantService {
     private RestaurantRepository repository;
 
     @Transactional(readOnly = true)
-    public Page<Restaurant> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<Restaurant> findAll(String name, String address, Pageable pageable) {
+        Specification<Restaurant> specification = RestaurantSpecification.withFilters(name, address);
+        return repository.findAll(specification,pageable);
     }
 
     @Transactional(readOnly = true)
