@@ -3,6 +3,8 @@ package com.api.goomer.services;
 import com.api.goomer.entities.category.Category;
 import com.api.goomer.entities.product.Product;
 import com.api.goomer.entities.restaurant.Restaurant;
+import com.api.goomer.exceptions.EntityIsNotFoundException;
+import com.api.goomer.exceptions.UniqueViolationException;
 import com.api.goomer.repositories.ProductRepository;
 import com.api.goomer.web.dtos.mapper.ProductMapper;
 import com.api.goomer.web.dtos.product.ProductCreateDto;
@@ -36,11 +38,16 @@ public class ProductService {
         Restaurant restaurant = returnRestaurantById(createDto.restaurantId());
         Category category = returnCategoryById(createDto.categoryId());
         Product product = ProductMapper.toProduct(createDto, restaurant, category);
+
+        if(repository.findByProductNameAndRestaurant(product.getProductName(), product.getRestaurant()) != null){
+            throw new UniqueViolationException(String.format("Produto '%s' já existe neste restaurante", product.getProductName()));
+        }
+
         return repository.save(product);
     }
 
     public Product findById(UUID id){
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+        return repository.findById(id).orElseThrow(() -> new EntityIsNotFoundException("Produto não encontrado"));
     }
 
     @Transactional

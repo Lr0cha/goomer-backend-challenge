@@ -1,6 +1,8 @@
 package com.api.goomer.services;
 
 import com.api.goomer.entities.restaurant.Restaurant;
+import com.api.goomer.exceptions.EntityIsNotFoundException;
+import com.api.goomer.exceptions.UniqueViolationException;
 import com.api.goomer.repositories.RestaurantRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +27,14 @@ public class RestaurantService {
 
     @Transactional(readOnly = true)
     public Restaurant findById(UUID id) { //404
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Restaurante não encontrado"));
+        return repository.findById(id).orElseThrow(() -> new EntityIsNotFoundException("Restaurante não encontrado"));
     }
 
     @Transactional
     public Restaurant create(Restaurant restaurant) {
+        if(repository.findByNameAndAddress(restaurant.getName(), restaurant.getAddress()) != null){
+            throw new UniqueViolationException(String.format("Restaurante: '%s' já existe neste endereço",restaurant.getName()));
+        }
         return repository.save(restaurant);
     }
 

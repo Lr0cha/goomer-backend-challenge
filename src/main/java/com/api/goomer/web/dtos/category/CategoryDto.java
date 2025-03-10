@@ -5,6 +5,6 @@ import jakarta.validation.constraints.Size;
 
 public record CategoryDto(
         @NotNull
-        @Size(min = 1, max = 255)
+        @Size(min = 1, max = 100)
         String description
 ) {}
