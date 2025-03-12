@@ -7,11 +7,12 @@ import com.api.goomer.entities.restaurant.Restaurant;
 import com.api.goomer.web.dtos.product.ProductCreateDto;
 import com.api.goomer.web.dtos.product.ProductResponseDto;
 
-import java.util.UUID;
 
 public class ProductMapper {
 
     public static ProductResponseDto toDto(Product product){
+        Offer offer = product.getOffer();
+
         return new ProductResponseDto(
                 product.getId(),
                 product.getUrlImage(),
@@ -19,23 +20,29 @@ public class ProductMapper {
                 product.getPrice(),
                 product.getCategory(),
                 product.getIsOnOffer(),
-                product.getOffer().getPromotionalDescription(),
-                product.getOffer().getPromotionalPrice(),
-                product.getOffer().getPromotionalDays(),
-                product.getOffer().getPromotionalStartTime(),
-                product.getOffer().getPromotionalEndTime(),
+                offer != null ? offer.getPromotionalDescription() : null,
+                offer != null ? offer.getPromotionalPrice() : null,
+                offer != null ? offer.getPromotionalDays() : null,
+                offer != null ? offer.getPromotionalStartTime() : null,
+                offer != null ? offer.getPromotionalEndTime() : null,
                 product.getRestaurant()
                 );
     }
 
     public static Product toProduct(ProductCreateDto dto,
                                     Restaurant restaurant, Category category){
-        Offer offer = new Offer(
+        Offer offer;
+        if(dto.isOnOffer()){
+            offer = new Offer(
                 dto.promotionalDescription(),
                 dto.promotionalPrice(),
                 dto.promotionalDays(),
-                dto.promotionalStartTime(),
-                dto.promotionalEndTime());
+                dto.promotionalTime()[0],
+                dto.promotionalTime()[1]
+                    );
+        }else{
+             offer = new Offer();
+        }
 
         return new Product(
                 null,
@@ -43,7 +50,7 @@ public class ProductMapper {
                 dto.productName(),
                 dto.price(),
                 category,
-                false,
+                dto.isOnOffer(),
                 offer,
                 restaurant
         );
