@@ -29,7 +29,7 @@ public class RestaurantService {
     }
 
     @Transactional(readOnly = true)
-    public Restaurant findById(UUID id) { //404
+    public Restaurant findById(UUID id) {
         return repository.findById(id).orElseThrow(() -> new EntityIsNotFoundException("Restaurante não encontrado"));
     }
 
@@ -53,6 +53,7 @@ public class RestaurantService {
 
     @Transactional
     public void delete(UUID id) {
-        repository.deleteById(id);
+        Restaurant restaurant = findById(id);
+        repository.delete(restaurant);
     }
 }

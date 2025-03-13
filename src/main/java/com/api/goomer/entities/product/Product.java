@@ -50,4 +50,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    public Product(UUID uuid, String produtoB, BigDecimal bigDecimal, Restaurant restaurant, Category category) {
+    }
 }

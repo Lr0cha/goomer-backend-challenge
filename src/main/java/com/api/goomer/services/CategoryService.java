@@ -30,7 +30,7 @@ public class CategoryService {
     }
 
     public Category findById(Long id){
-        return repository.findById(id).orElseThrow(() -> new EntityIsNotFoundException("Categoria não encontrado"));
+        return repository.findById(id).orElseThrow(() -> new EntityIsNotFoundException("Categoria não encontrada"));
     }
 
     @Transactional

@@ -73,7 +73,8 @@ public class ProductService {
 
     @Transactional
     public void delete(UUID id) {
-        repository.deleteById(id);
+        Product product = findById(id);
+        repository.delete(product);
     }
 
     // funções para resgatar categoria e restaurante relacionados ao produto
