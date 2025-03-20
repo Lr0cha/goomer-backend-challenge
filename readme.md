@@ -3,9 +3,7 @@
   <h1>Desafio Backend: Goomer Lista Rango 🍔</h1>
 </div>
 
-
-
-O desafio, encontrado no GitHub da Goomer, consistiu na criação de uma API de Restaurantes, que permite listar, cadastrar, alterar e atualizar restaurantes e seus produtos associados. Durante o desenvolvimento, tive a oportunidade de aplicar conceitos e ferramentas que já conhecia do ecossistema Spring. Explorei a implementação de **Interface Specification**, permitindo consultas dinâmicas e personalizadas ao banco de dados, além de realizar testes unitários com **JUnit** e **Mockito**.
+O desafio, encontrado no GitHub da Goomer, consistiu na criação de uma API de Restaurantes, que permite listar, cadastrar, alterar e atualizar restaurantes e seus produtos associados. Durante o desenvolvimento, tive a oportunidade de aplicar conceitos e ferramentas que já conhecia do ecossistema Spring. Explorei a implementação de **Interface Specification**, permitindo consultas dinâmicas e personalizadas ao banco de dados, além de realizar testes unitários e de integração com **JUnit**, **Spring Boot Test** e **Mockito**.
 
 <details>
     <summary><b>Categorias</b></summary>
@@ -23,15 +21,16 @@ O desafio, encontrado no GitHub da Goomer, consistiu na criação de uma API de 
 </details>
 
 ## 💻 Funcionalidades e Tecnologias
+
 - **Pageable** – Paginação eficiente de resultados.
 - **Specifications** – Consultas dinâmicas e filtradas para produtos e restaurantes.
-- **Testes Unitários** – Garantia de qualidade com JUnit e Mockito.
+- **Testes Automatizados** – Garantia de qualidade com testes de unidade e integração.
 - **Tratamento de Exceções** – Respostas personalizadas para erros.
 - **Documentação** – Documentação completa dos endpoints com Swagger.
 - **DTOs** – Conversão eficiente de entidades para DTOs.
 - **Validação de Dados** – Validação através de anotações personalizadas com **jakarta.validation**.
-  
-## 📝 Sobre 
+
+## 📝 Sobre
 
 - **Nome do Projeto:** Goomer Lista Rango
 - **Link do Desafio:** [goomer-challenge](https://github.com/goomerdev/job-dev-backend-interview)
@@ -69,7 +68,7 @@ O desafio, encontrado no GitHub da Goomer, consistiu na criação de uma API de 
     - Descrição para a promoção do produto (ex.: Chopp pela metade do preço)
     - Preço promocional
     - Dias da semana e o horário em que o produto deve estar em promoção
-   
+
 ## ⚙️ Como executar
 
 Pré-requisito: Java 21 e MySQL
@@ -79,4 +78,3 @@ Pré-requisito: Java 21 e MySQL
 3. Crie o database no MySQL com as configurações do application.properties
 4. Execute o GoomerApplication
 5. Testar endpoints através do Postman ou da url <http://localhost:8080/swagger-ui/index.html>
-
