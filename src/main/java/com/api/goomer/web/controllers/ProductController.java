@@ -5,7 +5,6 @@ import com.api.goomer.services.ProductService;
 import com.api.goomer.web.dtos.mapper.ProductMapper;
 import com.api.goomer.web.dtos.product.ProductCreateDto;
 import com.api.goomer.web.dtos.product.ProductResponseDto;
-import com.api.goomer.web.dtos.restaurant.RestaurantResponseDto;
 import com.api.goomer.web.exceptions.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

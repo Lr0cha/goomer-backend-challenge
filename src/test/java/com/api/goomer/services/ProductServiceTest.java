@@ -6,6 +6,7 @@ import com.api.goomer.entities.restaurant.Restaurant;
 import com.api.goomer.exceptions.EntityIsNotFoundException;
 import com.api.goomer.exceptions.UniqueViolationException;
 import com.api.goomer.repositories.ProductRepository;
+import com.api.goomer.utils.CreateTestEntity;
 import com.api.goomer.web.dtos.mapper.ProductMapper;
 import com.api.goomer.web.dtos.product.ProductCreateDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,11 +16,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,23 +52,43 @@ class ProductServiceTest {
     private Category category;
     private Product product;
     private LocalTime[] times;
+    private Pageable pageable;
 
     @BeforeEach
     void setup(){
         MockitoAnnotations.openMocks(this);
+
+        pageable = PageRequest.of(0, 10);
+
         times = new LocalTime[]{LocalTime.of(9, 0), LocalTime.of(12, 30)};
 
-        restaurant = new Restaurant(UUID.randomUUID(),"https://example.com/image1.jpg","Restaurante A",
-                "Rua a  , 123, Bairro X", "Segunda a Sexta: 10:00 - 22:00", new ArrayList<>());
+        restaurant = CreateTestEntity.restaurant(UUID.randomUUID());
 
-        category = new Category(1L, "Tipo 1");
+        category = CreateTestEntity.category(1L);
 
-        productCreateDto = new ProductCreateDto("https://example.com/image.jpg","Produto Exemplo", new BigDecimal("49.99"),
-                1L,true,"Desconto especial de 10%",new BigDecimal("44.99"),
-                "Segunda, Quarta, Sexta", times ,restaurant.getId());
+        productCreateDto = CreateTestEntity.product(category,restaurant);
 
         product = ProductMapper.toProduct(productCreateDto, restaurant, category);
+    }
 
+    @Test
+    @DisplayName("should show a product from a restaurant when everything is ok")
+    void findProductsByRestaurant200() {
+        Product product2 = new Product(UUID.randomUUID(),"Produto B", BigDecimal.valueOf(100.00),restaurant,category);
+
+        when(restaurantService.findById(restaurant.getId())).thenReturn(restaurant);
+
+        List<Product> products = List.of(product,product2);
+
+        Page<Product> productPage = new PageImpl<>(products, pageable, products.size());
+
+        when(repository.findAll((Specification<Product>) any(), eq(pageable))).thenReturn(productPage);
+
+        Page<Product> result = productService.findProductsByRestaurant(null, category.getDescription(), restaurant.getId(), pageable);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        assertTrue(result.getContent().contains(product));
     }
 
     @Test
@@ -81,7 +105,7 @@ class ProductServiceTest {
         Product result = productService.create(productCreateDto);
 
         assertNotNull(result);
-        assertEquals("Produto Exemplo", result.getProductName());
+        assertEquals("Produto A", result.getProductName());
         assertEquals(new BigDecimal("49.99"), result.getPrice());
         verify(repository, times(1)).save(any(Product.class));
     }
@@ -99,17 +123,13 @@ class ProductServiceTest {
             productService.create(productCreateDto);
         });
 
-        assertEquals("Produto 'Produto Exemplo' já existe neste restaurante", exception.getMessage());
+        assertEquals("Produto 'Produto A' já existe neste restaurante", exception.getMessage());
     }
 
     @Test
     @DisplayName("should update a product successfully when everything is ok")
     void update204() {
-
-        UUID id = UUID.randomUUID();
-
-        when(repository.findById(id)).thenReturn(Optional.of(product));
-
+        when(repository.findById(product.getId())).thenReturn(Optional.of(product));
 
         when(categoryService.findById(category.getId())).thenReturn(category);
         when(restaurantService.findById(restaurant.getId())).thenReturn(restaurant);
@@ -129,7 +149,7 @@ class ProductServiceTest {
 
         when(repository.save(any(Product.class))).thenReturn(product);
 
-        productService.update(id, updateDto);
+        productService.update(product.getId(), updateDto);
 
         assertEquals("Produto atualizado", product.getProductName());
         assertEquals(new BigDecimal("99.99"), product.getPrice());
@@ -156,10 +176,9 @@ class ProductServiceTest {
     @Test
     @DisplayName("should delete a product sucessfully")
     void delete204() {
-        UUID id = product.getId();
-        when(repository.findById(id)).thenReturn(Optional.of(product));
+        when(repository.findById(product.getId())).thenReturn(Optional.of(product));
 
-        productService.delete(id);
+        productService.delete(product.getId());
 
         verify(repository, times(1)).delete(product);
     }
@@ -167,12 +186,11 @@ class ProductServiceTest {
     @Test
     @DisplayName("should throw EntityIsNotFoundException when deleting a non-existing product")
     void delete404() {
-        UUID id = product.getId();
-        when(repository.findById(id)).thenReturn(Optional.empty());
+        when(repository.findById(product.getId())).thenReturn(Optional.empty());
 
         EntityIsNotFoundException exception = assertThrows(
                 EntityIsNotFoundException.class,
-                () -> productService.delete(id)
+                () -> productService.delete(product.getId())
         );
         assertEquals("Produto não encontrado", exception.getMessage());
     }

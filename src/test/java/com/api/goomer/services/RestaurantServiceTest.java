@@ -4,6 +4,7 @@ import com.api.goomer.entities.restaurant.Restaurant;
 import com.api.goomer.exceptions.EntityIsNotFoundException;
 import com.api.goomer.exceptions.UniqueViolationException;
 import com.api.goomer.repositories.RestaurantRepository;
+import com.api.goomer.utils.CreateTestEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,13 +32,14 @@ class RestaurantServiceTest {
 
     private Restaurant restaurant;
     private Restaurant updatedRestaurant;
+    private UUID restaurantId;
 
     @BeforeEach
     void setup(){
         MockitoAnnotations.openMocks(this);
 
-        restaurant = new Restaurant(UUID.randomUUID(),"https://example.com/image1.jpg","Restaurante A",
-                "Rua a  , 123, Bairro X", "Segunda a Sexta: 10:00 - 22:00", new ArrayList<>());
+        restaurant = CreateTestEntity.restaurant(UUID.randomUUID());
+        restaurantId = restaurant.getId();
 
         updatedRestaurant = new Restaurant(null,"https://example.com/image2.jpg","Restaurante B",
                 "Rua B  , 123, Bairro Y", "Segunda a Quarta: 10:00 - 22:00", new ArrayList<>());
@@ -46,27 +48,24 @@ class RestaurantServiceTest {
 
 
     @Test
-    @DisplayName("should show a restaurant successfully when everything is ok")
+    @DisplayName("should show a restaurant successfully by id when everything is ok")
     void findById200() {
-        UUID id = restaurant.getId();
-        when(repository.findById(id)).thenReturn(Optional.of(restaurant));
-        Restaurant result = restaurantService.findById(id);
+        when(repository.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        Restaurant result = restaurantService.findById(restaurantId);
 
         assertNotNull(result);
-        assertEquals(id, result.getId());
+        assertEquals(restaurantId, result.getId());
         assertEquals("Restaurante A", result.getName());
     }
 
     @Test
     @DisplayName("should throw EntityIsNotFoundException when restaurant not found")
     void findById404() {
-        UUID id = restaurant.getId();
-
-        when(repository.findById(id)).thenReturn(Optional.empty());
+        when(repository.findById(restaurantId)).thenReturn(Optional.empty());
 
         EntityIsNotFoundException exception = assertThrows(
                 EntityIsNotFoundException.class,
-                () -> restaurantService.findById(id)
+                () -> restaurantService.findById(restaurantId)
         );
         assertEquals("Restaurante não encontrado", exception.getMessage());
     }
@@ -98,10 +97,9 @@ class RestaurantServiceTest {
     @Test
     @DisplayName("should delete a restaurant successfully")
     void delete204() {
-        UUID id = restaurant.getId();
-        when(repository.findById(id)).thenReturn(Optional.of(restaurant));
+        when(repository.findById(restaurantId)).thenReturn(Optional.of(restaurant));
 
-        restaurantService.delete(id);
+        restaurantService.delete(restaurantId);
 
         verify(repository, times(1)).delete(restaurant);
     }
@@ -109,12 +107,11 @@ class RestaurantServiceTest {
     @Test
     @DisplayName("should throw EntityIsNotFoundException when deleting a non-existing restaurant")
     void delete404() {
-        UUID id = restaurant.getId();
-        when(repository.findById(id)).thenReturn(Optional.empty());
+        when(repository.findById(restaurantId)).thenReturn(Optional.empty());
 
         EntityIsNotFoundException exception = assertThrows(
                 EntityIsNotFoundException.class,
-                () -> restaurantService.update(id, updatedRestaurant)
+                () -> restaurantService.update(restaurantId, updatedRestaurant)
         );
         assertEquals("Restaurante não encontrado", exception.getMessage());
     }
@@ -122,10 +119,9 @@ class RestaurantServiceTest {
     @Test
     @DisplayName("should update a restaurant successfully when everything is ok")
     void update204() {
-        UUID id = restaurant.getId();
-        when(repository.findById(id)).thenReturn(Optional.of(restaurant));
+        when(repository.findById(restaurantId)).thenReturn(Optional.of(restaurant));
 
-        restaurantService.update(id, updatedRestaurant);
+        restaurantService.update(restaurantId, updatedRestaurant);
 
         assertEquals("https://example.com/image2.jpg", restaurant.getUrlImage());
         assertEquals("Restaurante B", restaurant.getName());
@@ -138,15 +134,12 @@ class RestaurantServiceTest {
     @Test
     @DisplayName("should throw EntityIsNotFoundException when the restaurant not found")
     void update404() {
-        UUID id = restaurant.getId();
-        when(repository.findById(id)).thenReturn(Optional.empty());
+        when(repository.findById(restaurantId)).thenReturn(Optional.empty());
 
         EntityIsNotFoundException exception = assertThrows(
                 EntityIsNotFoundException.class,
-                () -> restaurantService.update(id, updatedRestaurant)
+                () -> restaurantService.update(restaurantId, updatedRestaurant)
         );
         assertEquals("Restaurante não encontrado", exception.getMessage());
     }
-
-
 }
